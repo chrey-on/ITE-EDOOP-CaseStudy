@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PurrfectMatch - Cat Adoption & Shelter</title>
+  <!-- Tailwind CSS CDN for sleek modern styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .modal-backdrop {
+      background-color: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- ========================================== -->
+  <!-- NAVIGATION BAR                             -->
+  <!-- ========================================== -->
+  <nav class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        <!-- Logo -->
+        <div class="flex items-center gap-3 cursor-pointer" onclick="showTab('catalog')">
+          <span class="text-3xl">🐾</span>
+          <div>
+            <span class="text-xl font-extrabold text-indigo-600 tracking-tight">PurrfectMatch</span>
+            <span class="hidden sm:inline-block ml-2 text-xs font-semibold px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">Adoption Portal</span>
+          </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="flex items-center gap-2 sm:gap-4">
+          <button id="nav-catalog" onclick="showTab('catalog')" class="px-3 py-2 rounded-lg text-sm font-semibold text-indigo-600 bg-indigo-50 transition">
+            Browse Cats
+          </button>
+          <button id="nav-applications" onclick="showTab('applications')" class="px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-indigo-600 hover:bg-slate-100 transition">
+            My Applications
+          </button>
+          <button id="nav-staff" onclick="showTab('staff')" class="px-3 py-2 rounded-lg text-sm font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition flex items-center gap-1.5">
+            <span>🔒</span> Staff Portal
+          </button>
+
+          <!-- User Badge / Auth Button -->
+          <div id="auth-actions" class="ml-2 pl-3 border-l border-slate-200">
+            <!-- Dynamically populated by JS: either 'Sign In' or 'User Profile' -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ========================================== -->
+  <!-- MAIN CONTENT AREA                          -->
+  <!-- ========================================== -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- TAB 1: CAT CATALOG (PUBLIC / GUEST) -->
+    <section id="tab-catalog" class="space-y-6">
+      <!-- Hero Banner -->
+      <div class="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl p-6 sm:p-10 text-white shadow-lg relative overflow-hidden">
+        <div class="relative z-10 max-w-2xl">
+          <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-semibold uppercase tracking-wider mb-3">Adopt, Don't Shop</span>
+          <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Find Your Furry Best Friend</h1>
+          <p class="mt-2 text-indigo-100 text-sm sm:text-base">Meet our loving shelter cats looking for warm, permanent homes. Browse freely and apply for adoption whenever you are ready!</p>
+        </div>
+        <div class="absolute -right-6 -bottom-10 text-9xl opacity-15 select-none pointer-events-none">🐱</div>
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-3 items-center justify-between">
+        <div class="relative w-full sm:w-80">
+          <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">🔍</span>
+          <input type="text" id="search-input" onkeyup="handleSearch()" placeholder="Search by name, breed, or color..." class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+        </div>
+        
+        <div class="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+          <span class="text-xs font-bold text-slate-400 uppercase">Filter:</span>
+          <button onclick="setFilter('All')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white" data-filter="All">All Cats</button>
+          <button onclick="setFilter('Kitten')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200" data-filter="Kitten">Kittens (&lt; 1 yr)</button>
+          <button onclick="setFilter('Female')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200" data-filter="Female">Females</button>
+          <button onclick="setFilter('Male')" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200" data-filter="Male">Males</button>
+        </div>
+      </div>
+
+      <!-- Cat Cards Grid -->
+      <div id="cats-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- Injected via JavaScript -->
+        <div class="col-span-full text-center py-16 text-slate-400">Loading cute cats...</div>
+      </div>
+    </section>
+
+    <!-- TAB 2: MY APPLICATIONS -->
+    <section id="tab-applications" class="space-y-6 hidden">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <h2 class="text-2xl font-extrabold text-slate-900">My Adoption Applications</h2>
+        <p class="text-slate-500 text-sm mt-1">Track the status of your shelter adoption requests.</p>
+        
+        <div id="user-applications-list" class="mt-6 space-y-4">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: STAFF MANAGEMENT PORTAL -->
+    <section id="tab-staff" class="space-y-6 hidden">
+      <div id="staff-auth-gate" class="bg-white max-w-md mx-auto p-8 rounded-2xl border border-slate-200 shadow-lg text-center">
+        <div class="text-4xl mb-3">🔐</div>
+        <h2 class="text-xl font-bold text-slate-900">Shelter Staff Access</h2>
+        <p class="text-slate-500 text-sm mt-1">Enter your staff credentials to manage intake and review applications.</p>
+        
+        <form onsubmit="handleStaffLogin(event)" class="mt-6 space-y-4 text-left">
+          <div>
+            <label class="text-xs font-bold text-slate-600 uppercase">Username</label>
+            <input type="text" id="staff-user" value="admin" required class="mt-1 w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div>
+            <label class="text-xs font-bold text-slate-600 uppercase">Password</label>
+            <input type="password" id="staff-pass" value="admin123" required class="mt-1 w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <button type="submit" class="w-full py-2.5 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition">Log In to Staff Dashboard</button>
+        </form>
+      </div>
+
+      <div id="staff-dashboard" class="space-y-6 hidden">
+        <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Shelter Applications Review</h2>
+            <p class="text-slate-500 text-xs">Review and finalize incoming adoption requests from adopters.</p>
+          </div>
+          <button onclick="logoutStaff()" class="px-3 py-1.5 bg-rose-50 text-rose-700 text-xs font-bold rounded-lg hover:bg-rose-100 transition">Log Out Staff</button>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase font-bold">
+                <tr>
+                  <th class="px-6 py-3">App ID</th>
+                  <th class="px-6 py-3">Cat</th>
+                  <th class="px-6 py-3">Adopter</th>
+                  <th class="px-6 py-3">Date</th>
+                  <th class="px-6 py-3">Status</th>
+                  <th class="px-6 py-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="staff-applications-table" class="divide-y divide-slate-200">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODAL: AUTH DIALOG (LOGIN / SIGN UP)       -->
+  <!-- ========================================== -->
+  <div id="auth-modal" class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center px-6 py-4 border-b border-slate-100">
+        <div class="flex gap-2">
+          <button id="tab-btn-signin" onclick="setAuthMode('signin')" class="text-sm font-bold text-indigo-600 pb-1 border-b-2 border-indigo-600">Sign In</button>
+          <button id="tab-btn-signup" onclick="setAuthMode('signup')" class="text-sm font-bold text-slate-400 pb-1 hover:text-slate-600">Create Account</button>
+        </div>
+        <button onclick="closeAuthModal()" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+      </div>
+
+      <!-- Modal Body: Sign In -->
+      <div id="form-signin" class="p-6 space-y-4">
+        <div class="text-center pb-2">
+          <h3 class="text-lg font-extrabold text-slate-900">Welcome Back!</h3>
+          <p class="text-slate-500 text-xs mt-0.5">Please sign in to complete your adoption application.</p>
+        </div>
+        <form onsubmit="handleCustomerLogin(event)" class="space-y-3">
+          <div>
+            <label class="text-xs font-bold text-slate-600 uppercase">Contact Phone or Email</label>
+            <input type="text" id="cust-login-id" placeholder="0917-555-1234 or email" required class="mt-1 w-full px-3 py-2 border border-slate-200 rounded-lg text-sm">
+          </div>
+          <button type="submit" class="w-full py-2.5 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition">Continue</button>
+        </form>
+      </div>
+
+      <!-- Modal Body: Sign Up -->
+      <div id="form-signup" class="p-6 space-y-3 hidden">
+        <div class="text-center pb-1">
+          <h3 class="text-lg font-extrabold text-slate-900">Adopter Registration</h3>
+          <p class="text-slate-500 text-xs mt-0.5">Quickly create your profile to adopt pets.</p>
+        </div>
+        <form onsubmit="handleCustomerSignup(event)" class="space-y-2.5">
+          <div>
+            <label class="text-xs font-bold text-slate-600 uppercase">Full Name *</label>
+            <input type="text" id="reg-name" placeholder="Juan Dela Cruz" required class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-sm">
+          </div>
+          <div>
+            <label class="text-xs font-bold text-slate-600 uppercase">Contact Number *</label>
+            <input type="text" id="reg-contact" placeholder="0917-xxx-xxxx" required class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-sm">
+          </div>
+          <div>
+            <label class="text-xs font-bold text-slate-600 uppercase">Email Address</label>
+            <input type="email" id="reg-email" placeholder="juan@example.com" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-sm">
+          </div>
+          <div>
+            <label class="text-xs font-bold text-slate-600 uppercase">Home Address *</label>
+            <input type="text" id="reg-address" placeholder="123 Street, City" required class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-sm">
+          </div>
+          <div>
+            <label class="text-xs font-bold text-slate-600 uppercase">Housing Type</label>
+            <select id="reg-housing" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-sm bg-white">
+              <option>House with Yard</option>
+              <option>Apartment</option>
+              <option>Condo</option>
+              <option>Townhouse</option>
+            </select>
+          </div>
+          <button type="submit" class="w-full mt-2 py-2.5 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 transition">Register & Continue</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: ADOPTION APPLICATION FORM           -->
+  <!-- ========================================== -->
+  <div id="apply-modal" class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
+      <div class="flex justify-between items-center px-6 py-4 bg-indigo-600 text-white">
+        <h3 class="font-bold text-lg flex items-center gap-2"><span>🐾</span> Apply to Adopt <span id="modal-cat-name" class="underline"></span></h3>
+        <button onclick="closeApplyModal()" class="text-white/80 hover:text-white text-xl">&times;</button>
+      </div>
+
+      <form onsubmit="handleApplicationSubmit(event)" class="p-6 space-y-4">
+        <input type="hidden" id="apply-cat-id">
+        
+        <!-- Cat Summary -->
+        <div id="modal-cat-summary" class="bg-indigo-50 border border-indigo-100 p-3 rounded-xl flex items-center gap-4">
+          <!-- Populated by JS -->
+        </div>
+
+        <div>
+          <label class="text-xs font-bold text-slate-600 uppercase">Adopter Profile</label>
+          <div id="modal-adopter-info" class="text-sm text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs font-bold text-slate-600 uppercase">Why do you want to adopt this cat? / Notes</label>
+          <textarea id="apply-notes" rows="3" placeholder="Tell us about your home, previous experience with cats, or preferred visit date..." class="mt-1 w-full p-3 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></textarea>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="closeApplyModal()" class="w-1/3 py-2.5 border border-slate-200 text-slate-600 font-bold rounded-lg hover:bg-slate-50 transition">Cancel</button>
+          <button type="submit" class="w-2/3 py-2.5 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition">Submit Application 🎉</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
