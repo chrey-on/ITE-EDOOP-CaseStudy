@@ -23,10 +23,11 @@ Traditional shelter record-keeping is cluttered and slow. **PurrfectMatch** brid
 ### 🌟 Key Highlights
 
 * 🐱 **Browse Freely as a Guest:** Explore adorable shelter cats, filter by age or gender, and find the perfect match without needing an account upfront.
+* 📸 **Accurate Multi-Photo Gallery (Up to 10 Photos):** Browse high-resolution, breed-accurate photos of every cat with an interactive thumbnail carousel and fullscreen viewer.
+* 📷 **Webcam Capture & Photo Attachment:** Staff can snap photos directly via live camera or attach local images (up to 10 per cat) with instant thumbnail previews and deletion.
 * 📋 **Frictionless Adoption:** Ready to adopt? A sleek centered sign-in pop-up appears only when you click **"Adopt Me!"** to submit your application in seconds.
 * 🔐 **Dedicated Staff Dashboard:** Shelter caretakers manage cat intake, track adopter profiles, and review/finalize adoption requests with automatic status updates.
-* ⚡ **Zero-Setup & 100% Offline:** Built-in SQLite database—no servers, no XAMPP, and no complex configurations required. Just launch and go!
-* 🎨 **Dual Design Flavors:** Choose between the native **Python Desktop app** or the modern **Tailwind Web edition**.
+* 🎨 **Modern Desktop GUI:** Built with CustomTkinter for an elegant, responsive, dark/light theme desktop experience.
 
 ---
 
@@ -34,7 +35,8 @@ Traditional shelter record-keeping is cluttered and slow. **PurrfectMatch** brid
 
 | 🐱 **Customer Portal** | 🔐 **Staff Back-Office** |
 | :--- | :--- |
-| • Visual cat card gallery | • Real-time shelter statistics |
+| • Visual cat card gallery with real photos | • Real-time shelter statistics |
+| • Interactive photo gallery modal (up to 10 images) | • Live camera photo capture & file attachments (up to 10) |
 | • Filter by kitten, adult, or gender | • Complete Cat Intake (Add, Edit, Delete) |
 | • Action-gated modal sign-in | • Adopter directory & search |
 | • Personal application tracking | • One-click "Finalize Adoption" approval |
@@ -53,19 +55,12 @@ uv pip install -r requirements.txt
 
 ### 2. Launch the Application
 
-#### 🐍 Native Python Desktop (Recommended)
 ```bash
 # Launch the Customer Adoption Portal:
 uv run customer_app.py
 
 # Launch the Staff Management Dashboard:
 uv run admin_app.py
-```
-
-#### 🌐 Web / Tailwind Edition
-```bash
-# Launch either view via the interactive menu:
-uv run web_version/main_web.py
 ```
 
 ---

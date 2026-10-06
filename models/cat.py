@@ -24,6 +24,7 @@ class Cat:
         adoption_status="Available",
         cage_number="Cage A-1",
         notes="",
+        images=None,
         created_at=None
     ):
         self._id = id
@@ -38,6 +39,7 @@ class Cat:
         self.adoption_status = adoption_status
         self.cage_number = cage_number
         self.notes = notes
+        self.images = list(images) if images else []
         self._created_at = created_at
 
     @property
@@ -110,6 +112,11 @@ class Cat:
             parts.append(f"{months} mo{'s' if months > 1 else ''}")
         return " ".join(parts)
 
+    @property
+    def primary_image(self):
+        """Returns the primary image path, or None if no images."""
+        return self.images[0] if self.images else None
+
     def to_dict(self):
         return {
             "id": self._id,
@@ -124,7 +131,9 @@ class Cat:
             "is_spayed_neutered": int(self.is_spayed_neutered),
             "adoption_status": self._adoption_status,
             "cage_number": self.cage_number,
-            "notes": self.notes
+            "notes": self.notes,
+            "images": list(self.images),
+            "primary_image": self.primary_image
         }
 
     @classmethod
@@ -144,5 +153,6 @@ class Cat:
             adoption_status=data.get("adoption_status", "Available"),
             cage_number=data.get("cage_number", "Cage A-1"),
             notes=data.get("notes", ""),
+            images=data.get("images", []),
             created_at=data.get("created_at")
         )

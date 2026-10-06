@@ -55,6 +55,16 @@ CREATE TABLE IF NOT EXISTS adoption_applications (
     FOREIGN KEY (adopter_id) REFERENCES adopters (id) ON DELETE CASCADE
 );
 
+-- 5. Cat Images table (Supports up to 10 images per cat)
+CREATE TABLE IF NOT EXISTS cat_images (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    cat_id INTEGER NOT NULL,
+    image_path TEXT NOT NULL,
+    is_primary INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (cat_id) REFERENCES cats (id) ON DELETE CASCADE
+);
+
 -- ============================================================
 -- Seed Data
 -- ============================================================

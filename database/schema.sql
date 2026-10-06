@@ -61,6 +61,16 @@ CREATE TABLE IF NOT EXISTS `adoption_applications` (
     CONSTRAINT `fk_app_adopter` FOREIGN KEY (`adopter_id`) REFERENCES `adopters` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- 5. Cat Images table (Supports up to 10 images per cat)
+CREATE TABLE IF NOT EXISTS `cat_images` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `cat_id` INT NOT NULL,
+    `image_path` VARCHAR(255) NOT NULL,
+    `is_primary` TINYINT(1) DEFAULT 0,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT `fk_img_cat` FOREIGN KEY (`cat_id`) REFERENCES `cats` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- ============================================================
 -- Seed Data
 -- ============================================================

@@ -14,6 +14,7 @@ from tkinter import messagebox
 import customtkinter as ctk
 
 from database.db_connection import DatabaseConnection
+from views.theme import Theme
 from views.login_view import LoginView
 from views.main_window import MainWindow
 
@@ -31,6 +32,7 @@ class PurrfectMatchApp(ctk.CTk):
         # Apply Global CustomTkinter Theme
         ctk.set_appearance_mode("Dark")
         ctk.set_default_color_theme("blue")
+        self.configure(fg_color=Theme.BG_ROOT)
 
         # Configure Root Layout
         self.grid_rowconfigure(0, weight=1)

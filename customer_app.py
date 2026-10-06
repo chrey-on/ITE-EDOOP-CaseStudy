@@ -10,6 +10,7 @@ Features:
 
 import customtkinter as ctk
 from database.db_connection import DatabaseConnection
+from views.theme import Theme
 from views.customer.customer_portal_view import CustomerPortalView
 
 
@@ -24,6 +25,7 @@ class CustomerApp(ctk.CTk):
 
         ctk.set_appearance_mode("Dark")
         ctk.set_default_color_theme("blue")
+        self.configure(fg_color=Theme.BG_ROOT)
 
         # Initialize SQLite database
         db = DatabaseConnection()
