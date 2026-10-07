@@ -14,6 +14,7 @@ from tkinter import messagebox
 import customtkinter as ctk
 from PIL import Image
 from controllers.image_service import ImageService
+from views.theme import Theme
 
 try:
     import cv2
@@ -157,10 +158,11 @@ class CameraCaptureModal(ctk.CTkToplevel):
         self.cancel_btn = ctk.CTkButton(
             self.controls_frame,
             text="Cancel [Esc]",
-            fg_color="gray",
-            hover_color="darkgray",
+            fg_color=Theme.SECONDARY,
+            hover_color=Theme.SECONDARY_HOVER,
+            text_color=Theme.SECONDARY_TEXT,
             height=40,
-            corner_radius=8,
+            corner_radius=Theme.RADIUS_BTN,
             font=ctk.CTkFont(size=12),
             command=self._on_close
         )
@@ -169,10 +171,11 @@ class CameraCaptureModal(ctk.CTkToplevel):
         self.capture_btn = ctk.CTkButton(
             self.controls_frame,
             text="📸 Take Photo [Space]",
-            fg_color="#27ae60",
-            hover_color="#219150",
+            fg_color=Theme.SUCCESS,
+            hover_color=Theme.SUCCESS_HOVER,
+            text_color=Theme.SUCCESS_TEXT,
             height=40,
-            corner_radius=8,
+            corner_radius=Theme.RADIUS_BTN,
             font=ctk.CTkFont(size=13, weight="bold"),
             command=self._take_snapshot
         )
@@ -187,10 +190,11 @@ class CameraCaptureModal(ctk.CTkToplevel):
         retake_btn = ctk.CTkButton(
             self.controls_frame,
             text="🔄 Retake [R]",
-            fg_color="#5d6d7e",
-            hover_color="#515a5a",
+            fg_color=Theme.SECONDARY,
+            hover_color=Theme.SECONDARY_HOVER,
+            text_color=Theme.SECONDARY_TEXT,
             height=40,
-            corner_radius=8,
+            corner_radius=Theme.RADIUS_BTN,
             font=ctk.CTkFont(size=12, weight="bold"),
             command=self._retake
         )
@@ -199,10 +203,11 @@ class CameraCaptureModal(ctk.CTkToplevel):
         save_btn = ctk.CTkButton(
             self.controls_frame,
             text="✅ Save Photo to Profile [Enter]",
-            fg_color="#2980b9",
-            hover_color="#2471a3",
+            fg_color=Theme.PRIMARY,
+            hover_color=Theme.PRIMARY_HOVER,
+            text_color=Theme.PRIMARY_TEXT,
             height=40,
-            corner_radius=8,
+            corner_radius=Theme.RADIUS_BTN,
             font=ctk.CTkFont(size=13, weight="bold"),
             command=self._save_photo
         )

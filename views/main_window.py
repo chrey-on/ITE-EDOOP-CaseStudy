@@ -107,7 +107,7 @@ class MainWindow(ctk.CTkFrame):
             role_row,
             text="● ONLINE",
             font=ctk.CTkFont(family="Segoe UI", size=9, weight="bold"),
-            text_color="#10b981"
+            text_color=Theme.SUCCESS[0]
         )
         role_pill.pack(side="left", padx=(8, 0))
 
@@ -173,7 +173,7 @@ class MainWindow(ctk.CTkFrame):
 
         self.theme_menu = ctk.CTkOptionMenu(
             bottom_frame,
-            values=["Dark", "Light", "System"],
+            values=["Light", "Dark", "System"],
             height=32,
             corner_radius=Theme.RADIUS_INPUT,
             fg_color=Theme.BG_INPUT,
@@ -185,6 +185,7 @@ class MainWindow(ctk.CTkFrame):
             dropdown_text_color=Theme.TEXT_PRIMARY,
             command=self._change_appearance_mode
         )
+        self.theme_menu.set("Light")
         self.theme_menu.pack(fill="x", pady=(0, 10))
 
         logout_btn = ctk.CTkButton(

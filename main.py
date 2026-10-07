@@ -30,7 +30,7 @@ class PurrfectMatchApp(ctk.CTk):
         self._center_window(1120, 720)
 
         # Apply Global CustomTkinter Theme
-        ctk.set_appearance_mode("Dark")
+        ctk.set_appearance_mode("Light")
         ctk.set_default_color_theme("blue")
         self.configure(fg_color=Theme.BG_ROOT)
 

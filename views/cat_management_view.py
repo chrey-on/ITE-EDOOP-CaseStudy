@@ -641,8 +641,8 @@ class CatManagementView(ctk.CTkFrame):
 
         for idx, cat in enumerate(cats):
             is_selected = (self.selected_cat_id == cat.id)
-            row_bg = ("#e0f2fe", "#182a44") if is_selected else Theme.BG_CARD_ALT
-            row_border = Theme.BORDER_ACCENT[1] if is_selected else Theme.BORDER[1]
+            row_bg = ("#f3e8ff", "#362e4a") if is_selected else Theme.BG_CARD_ALT
+            row_border = Theme.BORDER_ACCENT if is_selected else Theme.BORDER
 
             row_frame = ctk.CTkFrame(
                 self.rows_frame,

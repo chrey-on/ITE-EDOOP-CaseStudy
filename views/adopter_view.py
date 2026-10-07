@@ -433,7 +433,7 @@ class AdopterView(ctk.CTkFrame):
         self.pets_var.set(adopter.has_other_pets)
         self.status_menu.set(adopter.status)
 
-        self.feedback_lbl.configure(text=f"Selected Adopter #{adopter.id}: {adopter.full_name}", text_color="#3498db")
+        self.feedback_lbl.configure(text=f"Selected Adopter #{adopter.id}: {adopter.full_name}", text_color=Theme.PRIMARY[0])
         self.refresh_adopter_list()
 
     def clear_form(self):
@@ -447,7 +447,7 @@ class AdopterView(ctk.CTkFrame):
         self.housing_menu.set("House with Yard")
         self.pets_var.set(False)
         self.status_menu.set("Active")
-        self.feedback_lbl.configure(text="Ready for adopter registration or selection", text_color="gray")
+        self.feedback_lbl.configure(text="Ready for adopter registration or selection", text_color=Theme.TEXT_MUTED[0])
         self.refresh_adopter_list()
 
     def _handle_add(self):
@@ -472,12 +472,12 @@ class AdopterView(ctk.CTkFrame):
 
             success, res = self.controller.create_adopter(new_adopter)
             if success:
-                self.feedback_lbl.configure(text=f"Adopter '{name}' registered successfully!", text_color="#2ecc71")
+                self.feedback_lbl.configure(text=f"Adopter '{name}' registered successfully!", text_color=Theme.SUCCESS[0])
                 self.clear_form()
                 if self.on_data_changed:
                     self.on_data_changed()
             else:
-                self.feedback_lbl.configure(text=res, text_color="#e74c3c")
+                self.feedback_lbl.configure(text=res, text_color=Theme.DANGER[0])
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
@@ -508,12 +508,12 @@ class AdopterView(ctk.CTkFrame):
 
             success, msg = self.controller.update_adopter(adopter_to_update)
             if success:
-                self.feedback_lbl.configure(text=msg, text_color="#2ecc71")
+                self.feedback_lbl.configure(text=msg, text_color=Theme.SUCCESS[0])
                 self.refresh_adopter_list()
                 if self.on_data_changed:
                     self.on_data_changed()
             else:
-                self.feedback_lbl.configure(text=msg, text_color="#e74c3c")
+                self.feedback_lbl.configure(text=msg, text_color=Theme.DANGER[0])
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
@@ -529,12 +529,12 @@ class AdopterView(ctk.CTkFrame):
         if confirm:
             success, msg = self.controller.delete_adopter(self.selected_adopter_id)
             if success:
-                self.feedback_lbl.configure(text=msg, text_color="#e74c3c")
+                self.feedback_lbl.configure(text=msg, text_color=Theme.DANGER[0])
                 self.clear_form()
                 if self.on_data_changed:
                     self.on_data_changed()
             else:
-                self.feedback_lbl.configure(text=msg, text_color="#e74c3c")
+                self.feedback_lbl.configure(text=msg, text_color=Theme.DANGER[0])
 
     def _handle_search(self):
         search_txt = self.search_entry.get().strip()

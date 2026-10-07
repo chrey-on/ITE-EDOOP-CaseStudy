@@ -23,7 +23,7 @@ class CustomerApp(ctk.CTk):
         self.minsize(980, 650)
         self._center_window(1120, 750)
 
-        ctk.set_appearance_mode("Dark")
+        ctk.set_appearance_mode("Light")
         ctk.set_default_color_theme("blue")
         self.configure(fg_color=Theme.BG_ROOT)
 

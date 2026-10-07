@@ -483,7 +483,7 @@ class ApplicationView(ctk.CTkFrame):
         self.notes_box.delete("1.0", "end")
         self.notes_box.insert("1.0", app.notes or "")
 
-        self.feedback_lbl.configure(text=f"Selected App #{app.id} (Cat: {app.cat_name})", text_color="#3498db")
+        self.feedback_lbl.configure(text=f"Selected App #{app.id} (Cat: {app.cat_name})", text_color=Theme.PRIMARY[0])
         self.refresh_applications_list()
 
     def clear_form(self):
@@ -494,7 +494,7 @@ class ApplicationView(ctk.CTkFrame):
         self.date_entry.insert(0, date.today().isoformat())
         self.status_menu.set("Pending Review")
         self.notes_box.delete("1.0", "end")
-        self.feedback_lbl.configure(text="Ready for application submission or review", text_color="gray")
+        self.feedback_lbl.configure(text="Ready for application submission or review", text_color=Theme.TEXT_MUTED[0])
         self.refresh_dropdowns()
         self.refresh_applications_list()
 
@@ -519,12 +519,12 @@ class ApplicationView(ctk.CTkFrame):
 
         success, res = self.app_controller.create_application(app)
         if success:
-            self.feedback_lbl.configure(text="Application submitted successfully!", text_color="#2ecc71")
+            self.feedback_lbl.configure(text="Application submitted successfully!", text_color=Theme.SUCCESS[0])
             self.clear_form()
             if self.on_data_changed:
                 self.on_data_changed()
         else:
-            self.feedback_lbl.configure(text=str(res), text_color="#e74c3c")
+            self.feedback_lbl.configure(text=str(res), text_color=Theme.DANGER[0])
 
     def _handle_update(self):
         if not self.selected_app_id:
@@ -536,12 +536,12 @@ class ApplicationView(ctk.CTkFrame):
 
         success, msg = self.app_controller.update_application(self.selected_app_id, new_status, notes)
         if success:
-            self.feedback_lbl.configure(text=msg, text_color="#2ecc71")
+            self.feedback_lbl.configure(text=msg, text_color=Theme.SUCCESS[0])
             self.refresh_all()
             if self.on_data_changed:
                 self.on_data_changed()
         else:
-            self.feedback_lbl.configure(text=msg, text_color="#e74c3c")
+            self.feedback_lbl.configure(text=msg, text_color=Theme.DANGER[0])
 
     def _handle_quick_finalize(self):
         """Quickly transitions application to Completed and triggers Cat adoption."""
@@ -568,7 +568,7 @@ class ApplicationView(ctk.CTkFrame):
                 if self.on_data_changed:
                     self.on_data_changed()
             else:
-                self.feedback_lbl.configure(text=msg, text_color="#e74c3c")
+                self.feedback_lbl.configure(text=msg, text_color=Theme.DANGER[0])
 
     def _handle_delete(self):
         if not self.selected_app_id:
@@ -582,12 +582,12 @@ class ApplicationView(ctk.CTkFrame):
         if confirm:
             success, msg = self.app_controller.delete_application(self.selected_app_id)
             if success:
-                self.feedback_lbl.configure(text=msg, text_color="#e74c3c")
+                self.feedback_lbl.configure(text=msg, text_color=Theme.DANGER[0])
                 self.clear_form()
                 if self.on_data_changed:
                     self.on_data_changed()
             else:
-                self.feedback_lbl.configure(text=msg, text_color="#e74c3c")
+                self.feedback_lbl.configure(text=msg, text_color=Theme.DANGER[0])
 
     def _handle_search(self):
         search_txt = self.search_entry.get().strip()

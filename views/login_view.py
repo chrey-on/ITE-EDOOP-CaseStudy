@@ -152,7 +152,7 @@ class LoginView(ctk.CTkFrame):
 
         success, result = self.auth_controller.login(username, password)
         if success:
-            self.feedback_label.configure(text="Login successful!", text_color="#10b981")
+            self.feedback_label.configure(text="Login successful!", text_color=Theme.SUCCESS[0])
             self.on_login_success(result)
         else:
             self.feedback_label.configure(text=result, text_color=Theme.DANGER)

@@ -792,8 +792,8 @@ class CustomerPortalView(ctk.CTkFrame):
                     photo_frame,
                     text=f" 📷 {len(cat.images)} Photos ",
                     font=Theme.font_tiny(),
-                    fg_color=("#0f172a", "#090d16"),
-                    text_color="#ffffff",
+                    fg_color=("#3b2d4a", "#1a1626"),
+                    text_color=Theme.PRIMARY_TEXT,
                     corner_radius=12
                 )
                 badge.place(relx=0.96, rely=0.92, anchor="se")

@@ -1,6 +1,6 @@
 """
 PurrfectMatch Design System & Theme Tokens.
-Provides a modern, refined aesthetic (Obsidian/Slate palette with warm emerald & royal blue accents).
+Provides a modern, delightful Pastel aesthetic (Warm cream/blush canvas with soft pastel lilac, mint, and peach accents).
 Replaces generic default Tkinter styling with cohesive, high-contrast, professional desktop UI tokens.
 """
 
@@ -10,45 +10,48 @@ import customtkinter as ctk
 class Theme:
     # ==========================================
     # COLOR PALETTE (Light Mode, Dark Mode)
+    # Pastel Aesthetic: Warm cream/blush canvas, soft pastel lilac primary,
+    # pastel mint for adoptions/availability, pastel peach for pending reviews,
+    # and pastel coral for destructive actions.
     # ==========================================
     # Backgrounds & Surfaces
-    BG_ROOT = ("#f8fafc", "#0b0f19")          # Deep Obsidian Canvas
-    BG_SIDEBAR = ("#f1f5f9", "#0f172a")       # Slate 900 Sidebar
-    BG_CARD = ("#ffffff", "#141c2e")          # Elevated Surface
-    BG_CARD_ALT = ("#f8fafc", "#182238")      # Sub-card Surface
-    BG_CARD_HOVER = ("#f1f5f9", "#1e293b")    # Hover Highlight
-    BG_INPUT = ("#ffffff", "#0f1626")         # Input Fields
+    BG_ROOT = ("#faf6f8", "#17141f")          # Pastel Cream-Mist Canvas / Cozy Twilight
+    BG_SIDEBAR = ("#f4ecf3", "#1e1929")       # Soft Pastel Lilac-Rose Sidebar
+    BG_CARD = ("#ffffff", "#252033")          # Crisp White Card / Soft Elevated Plum
+    BG_CARD_ALT = ("#faf2f7", "#2e273f")      # Delicate Pastel Strawberry Milk
+    BG_CARD_HOVER = ("#f3e8f1", "#382f4d")    # Gentle Pastel Hover
+    BG_INPUT = ("#ffffff", "#1e1929")         # Clean Input Surface
     
     # Hairline Borders
-    BORDER = ("#e2e8f0", "#222f46")           # Subtle Hairline
-    BORDER_LIGHT = ("#cbd5e1", "#2d3e5c")     # Hover Border
-    BORDER_ACCENT = ("#3b82f6", "#60a5fa")    # Focus / Active Border
+    BORDER = ("#ebdce7", "#3b324f")           # Soft Pastel Lavender Border
+    BORDER_LIGHT = ("#dfcadb", "#4a3f63")     # Border Hover / Divider
+    BORDER_ACCENT = ("#c084fc", "#d8b4fe")    # Pastel Lilac Focus Border
 
     # Text & Typography
-    TEXT_PRIMARY = ("#0f172a", "#f8fafc")     # Crisp High-Contrast
-    TEXT_SECONDARY = ("#475569", "#94a3b8")   # Medium Subtext
-    TEXT_MUTED = ("#94a3b8", "#64748b")       # Muted Labels / Placeholders
-    TEXT_ACCENT = ("#2563eb", "#38bdf8")      # Highlights & Links
+    TEXT_PRIMARY = ("#2c223a", "#fcf7ff")     # Deep Plum Slate (Gentle, High-Contrast)
+    TEXT_SECONDARY = ("#6b5d7d", "#c4b5d6")   # Soft Mauve Subtext
+    TEXT_MUTED = ("#9e90af", "#8b7b9e")       # Pastel Heather Labels
+    TEXT_ACCENT = ("#9333ea", "#c084fc")      # Pastel Lilac Accent Text
 
     # Action Accents
-    # 1. Primary Action (Royal Blue)
-    PRIMARY = ("#2563eb", "#3b82f6")
-    PRIMARY_HOVER = ("#1d4ed8", "#2563eb")
+    # 1. Primary Action (Pastel Lilac / Sweet Lavender)
+    PRIMARY = ("#9333ea", "#a855f7")
+    PRIMARY_HOVER = ("#7e22ce", "#9333ea")
     PRIMARY_TEXT = "#ffffff"
 
-    # 2. Positive / Adoption Action (Emerald Mint)
-    SUCCESS = ("#10b981", "#059669")
-    SUCCESS_HOVER = ("#059669", "#047857")
+    # 2. Positive / Adoption Action (Pastel Mint / Soft Sage)
+    SUCCESS = ("#059669", "#10b981")
+    SUCCESS_HOVER = ("#047857", "#059669")
     SUCCESS_TEXT = "#ffffff"
 
-    # 3. Secondary / Neutral (Slate)
-    SECONDARY = ("#e2e8f0", "#1e293b")
-    SECONDARY_HOVER = ("#cbd5e1", "#2d3d57")
-    SECONDARY_TEXT = ("#0f172a", "#e2e8f0")
+    # 3. Secondary / Neutral (Pastel Oat / Lavender Gray)
+    SECONDARY = ("#f0e5ee", "#2e273f")
+    SECONDARY_HOVER = ("#e5d7e3", "#3b3250")
+    SECONDARY_TEXT = ("#3a2c49", "#f0e6f5")
 
-    # 4. Destructive (Ruby / Coral)
-    DANGER = ("#ef4444", "#dc2626")
-    DANGER_HOVER = ("#dc2626", "#b91c1c")
+    # 4. Destructive (Pastel Coral / Soft Salmon)
+    DANGER = ("#e11d48", "#f43f5e")
+    DANGER_HOVER = ("#be123c", "#e11d48")
     DANGER_TEXT = "#ffffff"
 
     # Status Pill Colors: returns (background_tuple, text_color_tuple)
@@ -56,19 +59,25 @@ class Theme:
     def get_status_colors(cls, status: str):
         status_clean = str(status).strip()
         if status_clean in ("Available", "Approved"):
-            return (("#dcfce7", "#064e3b"), ("#15803d", "#4ade80"))
+            # Pastel Mint / Sage
+            return (("#d1fae5", "#134e4a"), ("#065f46", "#6ee7b7"))
         elif status_clean in ("Pending", "Pending Review"):
-            return (("#fef3c7", "#78350f"), ("#b45309", "#fcd34d"))
+            # Pastel Peach / Apricot
+            return (("#fef3c7", "#451a03"), ("#92400e", "#fde047"))
         elif status_clean in ("Medical Hold", "Rejected"):
-            return (("#fee2e2", "#7f1d1d"), ("#b91c1c", "#fca5a5"))
+            # Pastel Rose / Blush Coral
+            return (("#ffe4e6", "#4c0519"), ("#9f1239", "#fda4af"))
         elif status_clean in ("Adopted", "Completed"):
-            return (("#f3e8ff", "#581c87"), ("#7e22ce", "#d8b4fe"))
+            # Pastel Lilac / Sweet Lavender
+            return (("#f3e8ff", "#3b0764"), ("#6b21a8", "#e9d5ff"))
         elif status_clean in ("Interview Scheduled", "Active"):
-            return (("#e0f2fe", "#0c4a6e"), ("#0284c7", "#38bdf8"))
+            # Pastel Sky / Periwinkle
+            return (("#e0f2fe", "#082f49"), ("#0369a1", "#7dd3fc"))
         elif status_clean == "Inactive":
-            return (("#f1f5f9", "#1e293b"), ("#64748b", "#94a3b8"))
+            # Pastel Heather Gray
+            return (("#f3ebf2", "#282136"), ("#7a6c8a", "#b5a7c5"))
         else:
-            return (("#f1f5f9", "#1e293b"), ("#475569", "#94a3b8"))
+            return (("#f3ebf2", "#282136"), ("#5f516f", "#b5a7c5"))
 
     # ==========================================
     # CORNER RADII
