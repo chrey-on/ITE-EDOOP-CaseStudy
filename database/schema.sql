@@ -100,3 +100,19 @@ INSERT IGNORE INTO `adopters` (`id`, `full_name`, `contact_number`, `email`, `ad
 INSERT IGNORE INTO `adoption_applications` (`id`, `cat_id`, `adopter_id`, `application_date`, `review_status`, `notes`) VALUES
 (1, 4, 1, '2026-02-16', 'Interview Scheduled', 'Adopter visited on weekend. Interview scheduled for Saturday morning.'),
 (2, 5, 2, '2026-01-20', 'Completed', 'Adoption finalized. Cat happily rehomed with Liam.');
+
+-- Sample Cat Images
+INSERT IGNORE INTO `cat_images` (`id`, `cat_id`, `image_path`, `is_primary`) VALUES
+(1, 1, 'assets/cat_images/cat_1_00972118.jpg', 1),
+(2, 1, 'assets/cat_images/cat_1_64a9c0ea.jpg', 0),
+(3, 2, 'assets/cat_images/cat_2_43e056ef.jpg', 1),
+(4, 2, 'assets/cat_images/cat_2_1ab0eae5.jpg', 0),
+(5, 2, 'assets/cat_images/cat_2_81e28876.jpg', 0),
+(6, 3, 'assets/cat_images/cat_3_e8afcfc5.jpg', 1),
+(7, 3, 'assets/cat_images/cat_3_5d799dad.jpg', 0),
+(8, 3, 'assets/cat_images/cat_3_9119e60c.jpg', 0),
+(9, 4, 'assets/cat_images/cat_4_4776d74a.jpg', 1),
+(10, 4, 'assets/cat_images/cat_4_f18cbcf6.jpg', 0),
+(11, 4, 'assets/cat_images/cat_4_09354cbf.jpg', 0),
+(12, 5, 'assets/cat_images/cat_5_c20dd53e.jpg', 1),
+(13, 5, 'assets/cat_images/cat_5_7c771c27.jpg', 0);

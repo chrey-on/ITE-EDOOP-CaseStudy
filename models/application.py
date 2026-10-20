@@ -12,7 +12,8 @@ class AdoptionApplication:
         "Interview Scheduled",
         "Approved",
         "Rejected",
-        "Completed"
+        "Completed",
+        "Archived"
     ]
 
     def __init__(
@@ -42,6 +43,10 @@ class AdoptionApplication:
     @property
     def id(self):
         return self._id
+
+    @property
+    def is_archived(self):
+        return self._review_status == "Archived"
 
     @property
     def review_status(self):

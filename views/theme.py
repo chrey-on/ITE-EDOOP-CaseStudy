@@ -1,7 +1,10 @@
 """
 PurrfectMatch Design System & Theme Tokens.
-Provides a modern, delightful Pastel aesthetic (Warm cream/blush canvas with soft pastel lilac, mint, and peach accents).
-Replaces generic default Tkinter styling with cohesive, high-contrast, professional desktop UI tokens.
+Provides a modern, high-contrast, polished desktop UI aesthetic:
+- Refined typography hierarchy using Segoe UI.
+- Harmonized pastel and vibrant action accents (Purple/Violet, Emerald Mint, Coral Rose).
+- Clean elevated surface layers with hairline borders and rounded radii.
+- Reusable empty-state rendering helper.
 """
 
 import customtkinter as ctk
@@ -10,114 +13,149 @@ import customtkinter as ctk
 class Theme:
     # ==========================================
     # COLOR PALETTE (Light Mode, Dark Mode)
-    # Pastel Aesthetic: Warm cream/blush canvas, soft pastel lilac primary,
-    # pastel mint for adoptions/availability, pastel peach for pending reviews,
-    # and pastel coral for destructive actions.
     # ==========================================
-    # Backgrounds & Surfaces
-    BG_ROOT = ("#faf6f8", "#17141f")          # Pastel Cream-Mist Canvas / Cozy Twilight
-    BG_SIDEBAR = ("#f4ecf3", "#1e1929")       # Soft Pastel Lilac-Rose Sidebar
-    BG_CARD = ("#ffffff", "#252033")          # Crisp White Card / Soft Elevated Plum
-    BG_CARD_ALT = ("#faf2f7", "#2e273f")      # Delicate Pastel Strawberry Milk
-    BG_CARD_HOVER = ("#f3e8f1", "#382f4d")    # Gentle Pastel Hover
-    BG_INPUT = ("#ffffff", "#1e1929")         # Clean Input Surface
+    # Backgrounds & Canvas Surfaces
+    BG_ROOT = ("#f8fafc", "#110e1b")          # Clean Slate Canvas / Modern Obsidian
+    BG_SIDEBAR = ("#f1f5f9", "#181426")       # Elevated Sidebar Surface
+    BG_CARD = ("#ffffff", "#1f1a30")          # Crisp Elevated Card
+    BG_CARD_ALT = ("#f8fafc", "#28223d")      # Subtle Sub-card / Chip Surface
+    BG_CARD_HOVER = ("#f1f5f9", "#342c4f")    # Card / Row Hover Surface
+    BG_INPUT = ("#ffffff", "#181426")         # Input Field Surface
     
-    # Hairline Borders
-    BORDER = ("#ebdce7", "#3b324f")           # Soft Pastel Lavender Border
-    BORDER_LIGHT = ("#dfcadb", "#4a3f63")     # Border Hover / Divider
-    BORDER_ACCENT = ("#c084fc", "#d8b4fe")    # Pastel Lilac Focus Border
+    # Hairline Borders & Dividers
+    BORDER = ("#e2e8f0", "#322a4d")           # Subtle Hairline Border
+    BORDER_LIGHT = ("#cbd5e1", "#3f3560")     # Divider / Outer Boundary
+    BORDER_ACCENT = ("#8b5cf6", "#a78bfa")    # Focus & Selected Border
 
-    # Text & Typography
-    TEXT_PRIMARY = ("#2c223a", "#fcf7ff")     # Deep Plum Slate (Gentle, High-Contrast)
-    TEXT_SECONDARY = ("#6b5d7d", "#c4b5d6")   # Soft Mauve Subtext
-    TEXT_MUTED = ("#9e90af", "#8b7b9e")       # Pastel Heather Labels
-    TEXT_ACCENT = ("#9333ea", "#c084fc")      # Pastel Lilac Accent Text
+    # Text & Typography (High-Contrast, Accessible)
+    TEXT_PRIMARY = ("#0f172a", "#f8fafc")     # Deep Slate-900 / Crisp White
+    TEXT_SECONDARY = ("#334155", "#cbd5e1")   # Crisp Slate-700 / Soft Slate-300
+    TEXT_MUTED = ("#64748b", "#94a3b8")       # High-Contrast Slate-500 / Slate-400
+    TEXT_ACCENT = ("#7c3aed", "#c084fc")      # Accent Violet Text
 
-    # Action Accents
-    # 1. Primary Action (Pastel Lilac / Sweet Lavender)
-    PRIMARY = ("#9333ea", "#a855f7")
-    PRIMARY_HOVER = ("#7e22ce", "#9333ea")
+    # Action Accents & Button States
+    # 1. Primary Action (Modern Violet)
+    PRIMARY = ("#7c3aed", "#8b5cf6")
+    PRIMARY_HOVER = ("#6d28d9", "#7c3aed")
     PRIMARY_TEXT = "#ffffff"
 
-    # 2. Positive / Adoption Action (Pastel Mint / Soft Sage)
+    # 2. Positive / Adoption Action (Emerald Mint)
     SUCCESS = ("#059669", "#10b981")
     SUCCESS_HOVER = ("#047857", "#059669")
     SUCCESS_TEXT = "#ffffff"
 
-    # 3. Secondary / Neutral (Pastel Oat / Lavender Gray)
-    SECONDARY = ("#f0e5ee", "#2e273f")
-    SECONDARY_HOVER = ("#e5d7e3", "#3b3250")
-    SECONDARY_TEXT = ("#3a2c49", "#f0e6f5")
+    # 3. Secondary / Neutral (Clean Gray-Slate)
+    SECONDARY = ("#e2e8f0", "#28223d")
+    SECONDARY_HOVER = ("#cbd5e1", "#352e4f")
+    SECONDARY_TEXT = ("#0f172a", "#f1f5f9")
 
-    # 4. Destructive (Pastel Coral / Soft Salmon)
+    # 4. Destructive (Coral Rose)
     DANGER = ("#e11d48", "#f43f5e")
     DANGER_HOVER = ("#be123c", "#e11d48")
     DANGER_TEXT = "#ffffff"
+
+    # 5. Warning / Archive (Warm Amber)
+    WARNING = ("#d97706", "#f59e0b")
+    WARNING_HOVER = ("#b45309", "#d97706")
+    WARNING_TEXT = "#ffffff"
 
     # Status Pill Colors: returns (background_tuple, text_color_tuple)
     @classmethod
     def get_status_colors(cls, status: str):
         status_clean = str(status).strip()
         if status_clean in ("Available", "Approved"):
-            # Pastel Mint / Sage
-            return (("#d1fae5", "#134e4a"), ("#065f46", "#6ee7b7"))
+            # Emerald Mint
+            return (("#d1fae5", "#064e3b"), ("#065f46", "#6ee7b7"))
         elif status_clean in ("Pending", "Pending Review"):
-            # Pastel Peach / Apricot
-            return (("#fef3c7", "#451a03"), ("#92400e", "#fde047"))
+            # Warm Amber
+            return (("#fef3c7", "#78350f"), ("#92400e", "#fde047"))
         elif status_clean in ("Medical Hold", "Rejected"):
-            # Pastel Rose / Blush Coral
-            return (("#ffe4e6", "#4c0519"), ("#9f1239", "#fda4af"))
+            # Soft Rose
+            return (("#ffe4e6", "#881337"), ("#9f1239", "#fda4af"))
         elif status_clean in ("Adopted", "Completed"):
-            # Pastel Lilac / Sweet Lavender
-            return (("#f3e8ff", "#3b0764"), ("#6b21a8", "#e9d5ff"))
+            # Royal Lilac
+            return (("#f3e8ff", "#581c87"), ("#6b21a8", "#e9d5ff"))
         elif status_clean in ("Interview Scheduled", "Active"):
-            # Pastel Sky / Periwinkle
-            return (("#e0f2fe", "#082f49"), ("#0369a1", "#7dd3fc"))
-        elif status_clean == "Inactive":
-            # Pastel Heather Gray
-            return (("#f3ebf2", "#282136"), ("#7a6c8a", "#b5a7c5"))
+            # Sky Cyan
+            return (("#e0f2fe", "#0c4a6e"), ("#0369a1", "#7dd3fc"))
+        elif status_clean in ("Archived", "Inactive"):
+            # Clean Slate Neutral
+            return (("#e2e8f0", "#1e293b"), ("#475569", "#94a3b8"))
         else:
-            return (("#f3ebf2", "#282136"), ("#5f516f", "#b5a7c5"))
+            return (("#e2e8f0", "#1e293b"), ("#475569", "#94a3b8"))
 
     # ==========================================
-    # CORNER RADII
+    # CORNER RADII (Fluid, Modern Contours)
     # ==========================================
-    RADIUS_CARD = 12
+    RADIUS_CARD = 14
     RADIUS_INPUT = 8
-    RADIUS_BTN = 8
-    RADIUS_PILL = 16
+    RADIUS_BTN = 9
+    RADIUS_PILL = 20
 
     # ==========================================
-    # TYPOGRAPHY SCALES
+    # TYPOGRAPHY SCALES (Segoe UI Modern Scale)
     # ==========================================
-    @staticmethod
-    def font_hero():
-        return ctk.CTkFont(family="Segoe UI", size=22, weight="bold")
+    FONT_FAMILY = "Segoe UI"
 
-    @staticmethod
-    def font_title():
-        return ctk.CTkFont(family="Segoe UI", size=18, weight="bold")
+    @classmethod
+    def font_hero(cls):
+        return ctk.CTkFont(family=cls.FONT_FAMILY, size=22, weight="bold")
 
-    @staticmethod
-    def font_subtitle():
-        return ctk.CTkFont(family="Segoe UI", size=14, weight="bold")
+    @classmethod
+    def font_title(cls):
+        return ctk.CTkFont(family=cls.FONT_FAMILY, size=17, weight="bold")
 
-    @staticmethod
-    def font_body():
-        return ctk.CTkFont(family="Segoe UI", size=12)
+    @classmethod
+    def font_subtitle(cls):
+        return ctk.CTkFont(family=cls.FONT_FAMILY, size=13, weight="bold")
 
-    @staticmethod
-    def font_body_bold():
-        return ctk.CTkFont(family="Segoe UI", size=12, weight="bold")
+    @classmethod
+    def font_body(cls):
+        return ctk.CTkFont(family=cls.FONT_FAMILY, size=12)
 
-    @staticmethod
-    def font_caption():
-        return ctk.CTkFont(family="Segoe UI", size=11)
+    @classmethod
+    def font_body_bold(cls):
+        return ctk.CTkFont(family=cls.FONT_FAMILY, size=12, weight="bold")
 
-    @staticmethod
-    def font_caption_bold():
-        return ctk.CTkFont(family="Segoe UI", size=11, weight="bold")
+    @classmethod
+    def font_caption(cls):
+        return ctk.CTkFont(family=cls.FONT_FAMILY, size=11)
 
-    @staticmethod
-    def font_tiny():
-        return ctk.CTkFont(family="Segoe UI", size=10, weight="bold")
+    @classmethod
+    def font_caption_bold(cls):
+        return ctk.CTkFont(family=cls.FONT_FAMILY, size=11, weight="bold")
+
+    @classmethod
+    def font_tiny(cls):
+        return ctk.CTkFont(family=cls.FONT_FAMILY, size=10, weight="bold")
+
+    # ==========================================
+    # EMPTY STATE HELPER
+    # ==========================================
+    @classmethod
+    def create_empty_state(cls, parent, icon="🐾", title="No records found", subtitle="Try adjusting your search or filters"):
+        """Creates a modern, centered empty state container."""
+        frame = ctk.CTkFrame(parent, fg_color="transparent")
+        frame.pack(expand=True, fill="both", pady=40)
+
+        ctk.CTkLabel(
+            frame,
+            text=icon,
+            font=ctk.CTkFont(size=44)
+        ).pack(pady=(0, 6))
+
+        ctk.CTkLabel(
+            frame,
+            text=title,
+            font=cls.font_subtitle(),
+            text_color=cls.TEXT_PRIMARY
+        ).pack(pady=(0, 2))
+
+        ctk.CTkLabel(
+            frame,
+            text=subtitle,
+            font=cls.font_caption(),
+            text_color=cls.TEXT_MUTED
+        ).pack()
+
+        return frame

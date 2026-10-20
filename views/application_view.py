@@ -7,6 +7,9 @@ from datetime import date
 from tkinter import messagebox
 import customtkinter as ctk
 from views.theme import Theme
+from views.toast import ToastNotification
+from views.dialogs import ConfirmModal, AlertModal
+from views.certificate_modal import AdoptionCertificateModal
 from controllers.application_controller import ApplicationController
 from controllers.cat_controller import CatController
 from controllers.adopter_controller import AdopterController
@@ -149,7 +152,8 @@ class ApplicationView(ctk.CTkFrame):
                 "Interview Scheduled",
                 "Approved",
                 "Rejected",
-                "Completed"
+                "Completed",
+                "Archived"
             ],
             height=32,
             corner_radius=Theme.RADIUS_INPUT,
@@ -233,18 +237,18 @@ class ApplicationView(ctk.CTkFrame):
         )
         self.clear_btn.grid(row=1, column=0, padx=4, pady=4, sticky="ew")
 
-        self.delete_btn = ctk.CTkButton(
+        self.archive_btn = ctk.CTkButton(
             btn_frame,
-            text="🗑️ Delete App",
+            text="📦 Archive App",
             height=36,
             corner_radius=Theme.RADIUS_BTN,
             font=Theme.font_body_bold(),
-            fg_color=Theme.DANGER,
-            hover_color=Theme.DANGER_HOVER,
-            text_color=Theme.DANGER_TEXT,
-            command=self._handle_delete
+            fg_color=Theme.WARNING,
+            hover_color=Theme.WARNING_HOVER,
+            text_color=Theme.WARNING_TEXT,
+            command=self._handle_archive_toggle
         )
-        self.delete_btn.grid(row=1, column=1, padx=4, pady=4, sticky="ew")
+        self.archive_btn.grid(row=1, column=1, padx=4, pady=4, sticky="ew")
 
         # Quick Finalize Button
         self.finalize_btn = ctk.CTkButton(
@@ -258,7 +262,21 @@ class ApplicationView(ctk.CTkFrame):
             text_color=Theme.PRIMARY_TEXT,
             command=self._handle_quick_finalize
         )
-        self.finalize_btn.grid(row=4, column=0, padx=10, pady=(4, 15), sticky="ew")
+        self.finalize_btn.grid(row=4, column=0, padx=10, pady=(4, 6), sticky="ew")
+
+        # Official Certificate Generator Button
+        self.cert_btn = ctk.CTkButton(
+            form_frame,
+            text="📜 View Adoption Certificate",
+            height=36,
+            corner_radius=Theme.RADIUS_BTN,
+            font=Theme.font_body_bold(),
+            fg_color=Theme.SECONDARY,
+            hover_color=Theme.SECONDARY_HOVER,
+            text_color=Theme.SECONDARY_TEXT,
+            command=self._handle_show_certificate
+        )
+        self.cert_btn.grid(row=5, column=0, padx=10, pady=(0, 16), sticky="ew")
 
         # ==========================================
         # RIGHT PANEL: Search, Filter & List
@@ -319,10 +337,10 @@ class ApplicationView(ctk.CTkFrame):
 
         self.filter_menu = ctk.CTkOptionMenu(
             filter_bar,
-            values=["All", "Pending Review", "Interview Scheduled", "Approved", "Rejected", "Completed"],
+            values=["All Active", "Pending Review", "Interview Scheduled", "Approved", "Completed", "Rejected", "Archived", "All (Incl. Archived)"],
             height=34,
             corner_radius=Theme.RADIUS_INPUT,
-            width=160,
+            width=175,
             fg_color=Theme.BG_INPUT,
             button_color=Theme.BG_CARD_HOVER,
             button_hover_color=Theme.BORDER_LIGHT,
@@ -332,6 +350,7 @@ class ApplicationView(ctk.CTkFrame):
             dropdown_text_color=Theme.TEXT_PRIMARY,
             command=lambda val: self._handle_search()
         )
+        self.filter_menu.set("All Active")
         self.filter_menu.grid(row=0, column=1, sticky="e")
 
         # Table Header (Right padded by 31px for 16px scrollbar offset)
@@ -343,11 +362,11 @@ class ApplicationView(ctk.CTkFrame):
         tbl_hdr.grid_columnconfigure(3, weight=1, minsize=85)   # Date
         tbl_hdr.grid_columnconfigure(4, weight=2, minsize=110)  # Status
 
-        ctk.CTkLabel(tbl_hdr, text="ID", font=Theme.font_caption_bold(), text_color=Theme.TEXT_MUTED, anchor="w").grid(row=0, column=0, sticky="w", padx=(12, 5), pady=7)
-        ctk.CTkLabel(tbl_hdr, text="Cat Name", font=Theme.font_caption_bold(), text_color=Theme.TEXT_MUTED, anchor="w").grid(row=0, column=1, sticky="w", padx=5, pady=7)
-        ctk.CTkLabel(tbl_hdr, text="Adopter Name", font=Theme.font_caption_bold(), text_color=Theme.TEXT_MUTED, anchor="w").grid(row=0, column=2, sticky="w", padx=5, pady=7)
-        ctk.CTkLabel(tbl_hdr, text="Date", font=Theme.font_caption_bold(), text_color=Theme.TEXT_MUTED, anchor="w").grid(row=0, column=3, sticky="w", padx=5, pady=7)
-        ctk.CTkLabel(tbl_hdr, text="Status", font=Theme.font_caption_bold(), text_color=Theme.TEXT_MUTED, anchor="center").grid(row=0, column=4, sticky="ew", padx=5, pady=7)
+        ctk.CTkLabel(tbl_hdr, text="ID", font=Theme.font_caption_bold(), text_color=Theme.TEXT_SECONDARY, anchor="w").grid(row=0, column=0, sticky="w", padx=(12, 5), pady=7)
+        ctk.CTkLabel(tbl_hdr, text="Cat Name", font=Theme.font_caption_bold(), text_color=Theme.TEXT_SECONDARY, anchor="w").grid(row=0, column=1, sticky="w", padx=5, pady=7)
+        ctk.CTkLabel(tbl_hdr, text="Adopter Name", font=Theme.font_caption_bold(), text_color=Theme.TEXT_SECONDARY, anchor="w").grid(row=0, column=2, sticky="w", padx=5, pady=7)
+        ctk.CTkLabel(tbl_hdr, text="Date", font=Theme.font_caption_bold(), text_color=Theme.TEXT_SECONDARY, anchor="w").grid(row=0, column=3, sticky="w", padx=5, pady=7)
+        ctk.CTkLabel(tbl_hdr, text="Status", font=Theme.font_caption_bold(), text_color=Theme.TEXT_SECONDARY, anchor="center").grid(row=0, column=4, sticky="ew", padx=5, pady=7)
 
         # Scrollable Applications Rows Frame
         self.rows_frame = ctk.CTkScrollableFrame(list_container, fg_color="transparent")
@@ -390,8 +409,13 @@ class ApplicationView(ctk.CTkFrame):
             self.count_badge.configure(text=f"{total_count} Application{'s' if total_count != 1 else ''}")
 
         if not apps:
-            no_data_lbl = ctk.CTkLabel(self.rows_frame, text="No application records found.", text_color=Theme.TEXT_MUTED, font=Theme.font_body())
-            no_data_lbl.grid(row=0, column=0, pady=30)
+            empty_frame = Theme.create_empty_state(
+                self.rows_frame,
+                icon="📋",
+                title="No Applications Found",
+                subtitle="Try selecting a different status filter or clearing your search."
+            )
+            empty_frame.grid(row=0, column=0, pady=30)
             return
 
         for idx, app in enumerate(apps):
@@ -459,7 +483,7 @@ class ApplicationView(ctk.CTkFrame):
         self.refresh_applications_list()
 
     def _select_application(self, app: AdoptionApplication):
-        """Populates form with selected application."""
+        """Populates form with selected application and configures dynamic archive/restore actions."""
         self.selected_app_id = app.id
         self.id_display.configure(text=f"App #{app.id}")
 
@@ -483,11 +507,36 @@ class ApplicationView(ctk.CTkFrame):
         self.notes_box.delete("1.0", "end")
         self.notes_box.insert("1.0", app.notes or "")
 
-        self.feedback_lbl.configure(text=f"Selected App #{app.id} (Cat: {app.cat_name})", text_color=Theme.PRIMARY[0])
+        # Update Archive/Restore button state based on current review_status
+        if app.review_status == "Archived":
+            self.archive_btn.configure(
+                text="🔄 Restore App",
+                fg_color=Theme.PRIMARY,
+                hover_color=Theme.PRIMARY_HOVER,
+                text_color=Theme.PRIMARY_TEXT
+            )
+            self.finalize_btn.configure(state="disabled")
+            self.feedback_lbl.configure(
+                text=f"📦 Selected App #{app.id} is ARCHIVED. Click 'Restore App' to reopen review.",
+                text_color=Theme.WARNING[0]
+            )
+        else:
+            self.archive_btn.configure(
+                text="📦 Archive App",
+                fg_color=Theme.WARNING,
+                hover_color=Theme.WARNING_HOVER,
+                text_color=Theme.WARNING_TEXT
+            )
+            self.finalize_btn.configure(state="normal")
+            self.feedback_lbl.configure(
+                text=f"Selected App #{app.id} (Cat: {app.cat_name})",
+                text_color=Theme.PRIMARY[0]
+            )
+
         self.refresh_applications_list()
 
     def clear_form(self):
-        """Clears form fields."""
+        """Clears form fields and resets button states."""
         self.selected_app_id = None
         self.id_display.configure(text="[ New Application ]")
         self.date_entry.delete(0, "end")
@@ -495,6 +544,13 @@ class ApplicationView(ctk.CTkFrame):
         self.status_menu.set("Pending Review")
         self.notes_box.delete("1.0", "end")
         self.feedback_lbl.configure(text="Ready for application submission or review", text_color=Theme.TEXT_MUTED[0])
+        self.archive_btn.configure(
+            text="📦 Archive App",
+            fg_color=Theme.WARNING,
+            hover_color=Theme.WARNING_HOVER,
+            text_color=Theme.WARNING_TEXT
+        )
+        self.finalize_btn.configure(state="normal")
         self.refresh_dropdowns()
         self.refresh_applications_list()
 
@@ -546,14 +602,10 @@ class ApplicationView(ctk.CTkFrame):
     def _handle_quick_finalize(self):
         """Quickly transitions application to Completed and triggers Cat adoption."""
         if not self.selected_app_id:
-            messagebox.showwarning("No Selection", "Please select an application to finalize.")
+            ToastNotification.show(self, "Please select an application to finalize.", toast_type="warning")
             return
 
-        confirm = messagebox.askyesno(
-            "Finalize Adoption",
-            "Marking this application as Completed will officially finalize the adoption and update the Cat status to 'Adopted'. Proceed?"
-        )
-        if confirm:
+        def on_finalize_confirmed():
             self.status_menu.set("Completed")
             notes = self.notes_box.get("1.0", "end").strip()
             if "Adoption finalized" not in notes:
@@ -563,31 +615,154 @@ class ApplicationView(ctk.CTkFrame):
 
             success, msg = self.app_controller.update_application(self.selected_app_id, "Completed", notes)
             if success:
-                messagebox.showinfo("Adoption Finalized 🎉", "Congratulations! The adoption has been completed and the cat's status is now 'Adopted'.")
+                ToastNotification.show(
+                    self,
+                    "Adoption finalized! Cat status updated to Adopted. 📜 Certificate generated.",
+                    toast_type="success",
+                    title="Adoption Finalized 🎉"
+                )
                 self.refresh_all()
                 if self.on_data_changed:
                     self.on_data_changed()
+                self._handle_show_certificate()
             else:
                 self.feedback_lbl.configure(text=msg, text_color=Theme.DANGER[0])
+                ToastNotification.show(self, msg, toast_type="danger")
 
-    def _handle_delete(self):
+        ConfirmModal(
+            self,
+            title="Finalize Cat Adoption",
+            message="Marking this application as Completed will officially finalize the adoption and update the Cat's status to 'Adopted'.\n\nGenerate and view official adoption certificate now?",
+            confirm_text="Finalize Adoption",
+            icon="🎉",
+            on_confirm=on_finalize_confirmed
+        )
+
+    def _handle_show_certificate(self):
+        """Displays the official Adoption Certificate preview and printable export."""
         if not self.selected_app_id:
-            messagebox.showwarning("No Selection", "Please select an application to delete.")
+            ToastNotification.show(self, "Please select an application to view its certificate.", toast_type="warning")
             return
 
-        confirm = messagebox.askyesno(
-            "Confirm Deletion",
-            f"Are you sure you want to delete Application #{self.selected_app_id}?"
-        )
-        if confirm:
-            success, msg = self.app_controller.delete_application(self.selected_app_id)
-            if success:
-                self.feedback_lbl.configure(text=msg, text_color=Theme.DANGER[0])
-                self.clear_form()
-                if self.on_data_changed:
-                    self.on_data_changed()
-            else:
-                self.feedback_lbl.configure(text=msg, text_color=Theme.DANGER[0])
+        # Fetch full application details
+        all_apps = self.app_controller.get_all_applications()
+        target_app = next((a for a in all_apps if a.id == self.selected_app_id), None)
+        if not target_app:
+            ToastNotification.show(self, "Application record not found.", toast_type="danger")
+            return
+
+        cat = self.cat_controller.get_cat_by_id(target_app.cat_id)
+        adopter = self.adopter_controller.get_adopter_by_id(target_app.adopter_id)
+
+        cert_data = {
+            "id": target_app.id,
+            "application_date": str(target_app.application_date),
+            "review_status": target_app.review_status,
+            "cat_name": cat.name if cat else target_app.cat_name,
+            "breed": cat.breed if cat else "Domestic Shorthair",
+            "color": cat.color if cat else "Mixed",
+            "gender": cat.gender if cat else "Unknown",
+            "cage_number": cat.cage_number if cat else "Shelter",
+            "primary_image": cat.primary_image if cat else None,
+            "adopter_name": adopter.full_name if adopter else target_app.adopter_name,
+            "contact_number": adopter.contact_number if adopter else "N/A",
+            "address": adopter.address if adopter else "N/A"
+        }
+
+        AdoptionCertificateModal(self, cert_data)
+
+    def _handle_archive_toggle(self):
+        """Archives an active application or restores an archived application."""
+        if not self.selected_app_id:
+            ToastNotification.show(self, "Please select an application from the list.", toast_type="warning")
+            return
+
+        current_status = self.status_menu.get()
+
+        # Retrieve application summary for personalized modal text
+        apps = self.app_controller.get_all_applications("All (Incl. Archived)")
+        target_app = next((a for a in apps if a.id == self.selected_app_id), None)
+        cat_name = target_app.cat_name if target_app else "Rescue Cat"
+        adopter_name = target_app.adopter_name if target_app else "Applicant"
+
+        if current_status == "Archived":
+            # Action: Restore
+            def on_restore_confirmed():
+                success, msg = self.app_controller.restore_application(self.selected_app_id)
+                if success:
+                    ToastNotification.show(
+                        self,
+                        f"Application #{self.selected_app_id} restored to Pending Review! 🔄",
+                        toast_type="success",
+                        title="Application Restored"
+                    )
+                    self.feedback_lbl.configure(text=msg, text_color=Theme.SUCCESS[0])
+                    self.clear_form()
+                    if self.on_data_changed:
+                        self.on_data_changed()
+                else:
+                    self.feedback_lbl.configure(text=msg, text_color=Theme.DANGER[0])
+                    ToastNotification.show(self, msg, toast_type="danger")
+
+            restore_msg = (
+                f"Restore Application #{self.selected_app_id} for '{cat_name}' back to the active review pipeline?\n\n"
+                "✓ Review Pipeline: Application status will reset to 'Pending Review'.\n"
+                f"✓ Rescue Status: '{cat_name}' will automatically be placed on 'Pending' adoption.\n"
+                "✓ Audit Trail: A restore event timestamp will be recorded in interview notes."
+            )
+
+            ConfirmModal(
+                self,
+                title="Restore Adoption Application",
+                message=restore_msg,
+                confirm_text="🔄 Restore Application",
+                cancel_text="Keep Archived",
+                icon="🔄",
+                confirm_color=Theme.PRIMARY,
+                confirm_hover=Theme.PRIMARY_HOVER,
+                width=520,
+                height=320,
+                on_confirm=on_restore_confirmed
+            )
+        else:
+            # Action: Archive
+            def on_archive_confirmed():
+                success, msg = self.app_controller.archive_application(self.selected_app_id)
+                if success:
+                    ToastNotification.show(
+                        self,
+                        f"Application #{self.selected_app_id} archived safely. 📦",
+                        toast_type="warning",
+                        title="Application Archived"
+                    )
+                    self.feedback_lbl.configure(text=msg, text_color=Theme.WARNING[0])
+                    self.clear_form()
+                    if self.on_data_changed:
+                        self.on_data_changed()
+                else:
+                    self.feedback_lbl.configure(text=msg, text_color=Theme.DANGER[0])
+                    ToastNotification.show(self, msg, toast_type="danger")
+
+            archive_msg = (
+                f"Are you sure you want to archive Application #{self.selected_app_id} for '{cat_name}' (Applicant: {adopter_name})?\n\n"
+                "✓ Safe Preservation: Full details, dates, and interview remarks remain safely stored.\n"
+                "✓ Backtrack Anytime: Choose 'Archived' from the filter dropdown to review or restore.\n"
+                f"✓ Cat Availability: If '{cat_name}' has no other pending requests, its status returns to 'Available'."
+            )
+
+            ConfirmModal(
+                self,
+                title="Archive Adoption Application",
+                message=archive_msg,
+                confirm_text="📦 Archive Application",
+                cancel_text="Keep Active",
+                icon="📦",
+                confirm_color=Theme.WARNING,
+                confirm_hover=Theme.WARNING_HOVER,
+                width=520,
+                height=340,
+                on_confirm=on_archive_confirmed
+            )
 
     def _handle_search(self):
         search_txt = self.search_entry.get().strip()

@@ -3,6 +3,7 @@ Application Controller managing Adoption Applications and Status Synchronization
 Demonstrates Event-Driven business logic (e.g. auto-updating cat adoption status).
 """
 
+from datetime import date
 from database.db_connection import DatabaseConnection
 from models.application import AdoptionApplication
 
@@ -44,6 +45,7 @@ class ApplicationController:
     def get_all_applications(self, status_filter=None):
         """
         Retrieves applications with joined Cat name and Adopter name.
+        By default or when status_filter is 'All' / 'All Active', excludes archived applications.
         """
         try:
             base_sql = """
@@ -56,12 +58,15 @@ class ApplicationController:
                 JOIN cats c ON a.cat_id = c.id
                 JOIN adopters ad ON a.adopter_id = ad.id
             """
-            if status_filter and status_filter != "All":
-                sql = base_sql + " WHERE a.review_status = %s ORDER BY a.id DESC"
-                rows = self.db.fetch_all(sql, (status_filter,))
-            else:
+            if status_filter in ("All", "All Active", None):
+                sql = base_sql + " WHERE a.review_status != 'Archived' ORDER BY a.id DESC"
+                rows = self.db.fetch_all(sql)
+            elif status_filter == "All (Incl. Archived)":
                 sql = base_sql + " ORDER BY a.id DESC"
                 rows = self.db.fetch_all(sql)
+            else:
+                sql = base_sql + " WHERE a.review_status = %s ORDER BY a.id DESC"
+                rows = self.db.fetch_all(sql, (status_filter,))
 
             return [AdoptionApplication.from_dict(row) for row in rows]
         except Exception as e:
@@ -83,12 +88,15 @@ class ApplicationController:
                 JOIN adopters ad ON a.adopter_id = ad.id
                 WHERE (c.name LIKE %s OR ad.full_name LIKE %s)
             """
-            if status_filter and status_filter != "All":
-                sql = base_sql + " AND a.review_status = %s ORDER BY a.id DESC"
-                rows = self.db.fetch_all(sql, (query_pattern, query_pattern, status_filter))
-            else:
+            if status_filter in ("All", "All Active", None):
+                sql = base_sql + " AND a.review_status != 'Archived' ORDER BY a.id DESC"
+                rows = self.db.fetch_all(sql, (query_pattern, query_pattern))
+            elif status_filter == "All (Incl. Archived)":
                 sql = base_sql + " ORDER BY a.id DESC"
                 rows = self.db.fetch_all(sql, (query_pattern, query_pattern))
+            else:
+                sql = base_sql + " AND a.review_status = %s ORDER BY a.id DESC"
+                rows = self.db.fetch_all(sql, (query_pattern, query_pattern, status_filter))
 
             return [AdoptionApplication.from_dict(row) for row in rows]
         except Exception as e:
@@ -143,6 +151,88 @@ class ApplicationController:
             return True, "Application status updated and cat status synchronized."
         except Exception as e:
             return False, f"Failed to update application: {e}"
+
+    def archive_application(self, app_id, reason=None):
+        """
+        Archives an application record to preserve historical data without hard-deleting it.
+        Event-Driven Actions:
+        - Sets review_status = 'Archived'
+        - Appends archive log to notes
+        - If the linked cat has no other active applications and is currently 'Pending',
+          reverts the cat back to 'Available'.
+        """
+        try:
+            app_row = self.db.fetch_one(
+                "SELECT cat_id, notes, review_status FROM adoption_applications WHERE id = %s",
+                (app_id,)
+            )
+            if not app_row:
+                return False, "Application record not found."
+
+            cat_id = app_row["cat_id"]
+            existing_notes = app_row.get("notes") or ""
+            today_str = date.today().isoformat()
+            
+            archive_entry = f"[Archived on {today_str}]"
+            if reason:
+                archive_entry += f" Reason: {reason}"
+            new_notes = f"{existing_notes}\n{archive_entry}".strip()
+
+            self.db.execute_query(
+                "UPDATE adoption_applications SET review_status = 'Archived', notes = %s WHERE id = %s",
+                (new_notes, app_id)
+            )
+
+            # Check if there are other pending/active applications for this cat
+            other_active = self.db.fetch_all(
+                "SELECT id FROM adoption_applications WHERE cat_id = %s AND id != %s AND review_status IN ('Pending Review', 'Interview Scheduled', 'Approved')",
+                (cat_id, app_id)
+            )
+            if not other_active:
+                self.db.execute_query(
+                    "UPDATE cats SET adoption_status = 'Available' WHERE id = %s AND adoption_status = 'Pending'",
+                    (cat_id,)
+                )
+
+            return True, "Application archived successfully. Historical record preserved."
+        except Exception as e:
+            return False, f"Failed to archive application: {e}"
+
+    def restore_application(self, app_id, target_status="Pending Review"):
+        """
+        Restores an archived application back to active review pipeline.
+        Event-Driven Actions:
+        - Sets review_status = target_status (default: 'Pending Review')
+        - Appends restore log to notes
+        - If cat is 'Available', marks cat as 'Pending'
+        """
+        try:
+            app_row = self.db.fetch_one(
+                "SELECT cat_id, notes, review_status FROM adoption_applications WHERE id = %s",
+                (app_id,)
+            )
+            if not app_row:
+                return False, "Application record not found."
+
+            cat_id = app_row["cat_id"]
+            existing_notes = app_row.get("notes") or ""
+            today_str = date.today().isoformat()
+            new_notes = f"{existing_notes}\n[Restored from archive on {today_str}]".strip()
+
+            self.db.execute_query(
+                "UPDATE adoption_applications SET review_status = %s, notes = %s WHERE id = %s",
+                (target_status, new_notes, app_id)
+            )
+
+            # Synchronize cat status: if cat is Available, put back to Pending
+            self.db.execute_query(
+                "UPDATE cats SET adoption_status = 'Pending' WHERE id = %s AND adoption_status = 'Available'",
+                (cat_id,)
+            )
+
+            return True, f"Application restored back to '{target_status}'."
+        except Exception as e:
+            return False, f"Failed to restore application: {e}"
 
     def delete_application(self, app_id):
         """Deletes an application record."""

@@ -5,7 +5,8 @@
 
 [![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![CustomTkinter](https://img.shields.io/badge/GUI-CustomTkinter-1f6aa5?style=for-the-badge)](https://github.com/TomSchimansky/CustomTkinter)
-[![SQLite](https://img.shields.io/badge/Database-SQLite3-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://sqlite.org)
+[![MySQL](https://img.shields.io/badge/Database-MySQL_Primary-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://mysql.com)
+[![SQLite](https://img.shields.io/badge/Fallback-SQLite3_Offline-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://sqlite.org)
 [![Offline Ready](https://img.shields.io/badge/Offline-100%25_Ready-27ae60?style=for-the-badge)]()
 
 **Connecting lovable shelter cats with caring families through a seamless, dual-interface desktop experience.**

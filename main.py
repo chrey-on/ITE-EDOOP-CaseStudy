@@ -5,7 +5,7 @@ Main Application Entry Point (EDOOP Case Study)
 Author: EDOOP Student Group
 Language: Python 3
 GUI Framework: CustomTkinter
-Database: SQLite3 (100% Offline, Zero-installation)
+Database: MySQL (XAMPP Primary) & SQLite (Offline Fallback)
 """
 
 import sys
@@ -53,7 +53,7 @@ class PurrfectMatchApp(ctk.CTk):
         self.geometry(f"{width}x{height}+{x}+{y}")
 
     def _init_database(self):
-        """Initializes database schema and seed data on SQLite."""
+        """Initializes database schema and seed data (MySQL with SQLite fallback)."""
         db = DatabaseConnection()
         success, message = db.initialize_database()
 
@@ -61,7 +61,7 @@ class PurrfectMatchApp(ctk.CTk):
             print(f"[Database Error]: {message}")
             self._show_db_error_screen(message)
         else:
-            print("[Database]: SQLite database connected and initialized.")
+            print(f"[Database]: {message}")
             self.show_login()
 
     def _show_db_error_screen(self, error_message):

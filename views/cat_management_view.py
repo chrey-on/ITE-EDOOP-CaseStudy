@@ -15,6 +15,8 @@ from controllers.image_service import ImageService
 from models.cat import Cat
 from views.camera_capture_modal import CameraCaptureModal
 from views.image_viewer_modal import ImageViewerModal
+from views.toast import ToastNotification
+from views.dialogs import ConfirmModal, AlertModal
 from views.theme import Theme
 
 
@@ -392,12 +394,12 @@ class CatManagementView(ctk.CTkFrame):
         tbl_hdr.grid_columnconfigure(4, weight=2, minsize=95)   # Status
         tbl_hdr.grid_columnconfigure(5, weight=1, minsize=75)   # Cage
 
-        ctk.CTkLabel(tbl_hdr, text="ID", font=Theme.font_tiny(), text_color=Theme.TEXT_MUTED, anchor="w").grid(row=0, column=0, sticky="w", padx=(12, 5), pady=7)
-        ctk.CTkLabel(tbl_hdr, text="CAT / NAME", font=Theme.font_tiny(), text_color=Theme.TEXT_MUTED, anchor="w").grid(row=0, column=1, sticky="w", padx=5, pady=7)
-        ctk.CTkLabel(tbl_hdr, text="BREED", font=Theme.font_tiny(), text_color=Theme.TEXT_MUTED, anchor="w").grid(row=0, column=2, sticky="w", padx=5, pady=7)
-        ctk.CTkLabel(tbl_hdr, text="AGE", font=Theme.font_tiny(), text_color=Theme.TEXT_MUTED, anchor="w").grid(row=0, column=3, sticky="w", padx=5, pady=7)
-        ctk.CTkLabel(tbl_hdr, text="STATUS", font=Theme.font_tiny(), text_color=Theme.TEXT_MUTED, anchor="center").grid(row=0, column=4, sticky="ew", padx=5, pady=7)
-        ctk.CTkLabel(tbl_hdr, text="HOUSING", font=Theme.font_tiny(), text_color=Theme.TEXT_MUTED, anchor="w").grid(row=0, column=5, sticky="w", padx=5, pady=7)
+        ctk.CTkLabel(tbl_hdr, text="ID", font=Theme.font_caption_bold(), text_color=Theme.TEXT_SECONDARY, anchor="w").grid(row=0, column=0, sticky="w", padx=(12, 5), pady=7)
+        ctk.CTkLabel(tbl_hdr, text="CAT / NAME", font=Theme.font_caption_bold(), text_color=Theme.TEXT_SECONDARY, anchor="w").grid(row=0, column=1, sticky="w", padx=5, pady=7)
+        ctk.CTkLabel(tbl_hdr, text="BREED", font=Theme.font_caption_bold(), text_color=Theme.TEXT_SECONDARY, anchor="w").grid(row=0, column=2, sticky="w", padx=5, pady=7)
+        ctk.CTkLabel(tbl_hdr, text="AGE", font=Theme.font_caption_bold(), text_color=Theme.TEXT_SECONDARY, anchor="w").grid(row=0, column=3, sticky="w", padx=5, pady=7)
+        ctk.CTkLabel(tbl_hdr, text="STATUS", font=Theme.font_caption_bold(), text_color=Theme.TEXT_SECONDARY, anchor="center").grid(row=0, column=4, sticky="ew", padx=5, pady=7)
+        ctk.CTkLabel(tbl_hdr, text="HOUSING", font=Theme.font_caption_bold(), text_color=Theme.TEXT_SECONDARY, anchor="w").grid(row=0, column=5, sticky="w", padx=5, pady=7)
 
         # Scrollable Cat Rows Frame
         self.rows_frame = ctk.CTkScrollableFrame(list_container, fg_color="transparent")
@@ -635,8 +637,13 @@ class CatManagementView(ctk.CTkFrame):
             self.count_badge.configure(text=f"{total_count} Cat{'s' if total_count != 1 else ''}")
 
         if not cats:
-            no_data_lbl = ctk.CTkLabel(self.rows_frame, text="No cat records found.", text_color=Theme.TEXT_MUTED, font=Theme.font_subtitle())
-            no_data_lbl.grid(row=0, column=0, pady=40)
+            empty_frame = Theme.create_empty_state(
+                self.rows_frame,
+                icon="🐱",
+                title="No Cat Profiles Found",
+                subtitle="Try searching with a different name or clearing filters."
+            )
+            empty_frame.grid(row=0, column=0, pady=40)
             return
 
         for idx, cat in enumerate(cats):
@@ -810,23 +817,25 @@ class CatManagementView(ctk.CTkFrame):
             success, res = self.controller.create_cat(new_cat)
             if success:
                 self.feedback_lbl.configure(text=f"Cat '{name}' registered successfully with {len(self.attached_images)} photos!", text_color="#10b981")
+                ToastNotification.show(self, f"Cat '{name}' registered successfully with {len(self.attached_images)} photos!", toast_type="success", title="Cat Registered 🐾")
                 self.clear_form()
                 if self.on_data_changed:
                     self.on_data_changed()
             else:
                 self.feedback_lbl.configure(text=res, text_color=Theme.DANGER)
+                ToastNotification.show(self, res, toast_type="danger")
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
     def _handle_update(self):
         if not self.selected_cat_id:
-            messagebox.showwarning("No Selection", "Please select a cat from the list to update.")
+            ToastNotification.show(self, "Please select a cat from the list to update.", toast_type="warning")
             return
 
         try:
             name = self.name_entry.get().strip()
             if not name:
-                messagebox.showwarning("Validation Error", "Cat name cannot be empty.")
+                ToastNotification.show(self, "Cat name cannot be empty.", toast_type="warning")
                 return
 
             age_val = self.age_entry.get().strip() or "12"
@@ -849,32 +858,43 @@ class CatManagementView(ctk.CTkFrame):
             success, msg = self.controller.update_cat(cat_to_update)
             if success:
                 self.feedback_lbl.configure(text=f"Cat #{self.selected_cat_id} updated with {len(self.attached_images)} photos!", text_color="#10b981")
+                ToastNotification.show(self, f"Cat #{self.selected_cat_id} ({name}) profile updated!", toast_type="success", title="Updated Successfully ✓")
                 self.refresh_cat_list()
                 if self.on_data_changed:
                     self.on_data_changed()
             else:
                 self.feedback_lbl.configure(text=msg, text_color=Theme.DANGER)
+                ToastNotification.show(self, msg, toast_type="danger")
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
     def _handle_delete(self):
         if not self.selected_cat_id:
-            messagebox.showwarning("No Selection", "Please select a cat from the list to delete.")
+            ToastNotification.show(self, "Please select a cat from the list to delete.", toast_type="warning")
             return
 
-        confirm = messagebox.askyesno(
-            "Confirm Deletion",
-            f"Are you sure you want to delete Cat #{self.selected_cat_id} ({self.name_entry.get()})?\nAll attached photos will also be deleted."
-        )
-        if confirm:
+        cat_name = self.name_entry.get().strip() or "this cat"
+
+        def on_delete_confirmed():
             success, msg = self.controller.delete_cat(self.selected_cat_id)
             if success:
                 self.feedback_lbl.configure(text=msg, text_color=Theme.DANGER)
+                ToastNotification.show(self, f"Cat #{self.selected_cat_id} ({cat_name}) has been deleted.", toast_type="danger", title="Cat Deleted")
                 self.clear_form()
                 if self.on_data_changed:
                     self.on_data_changed()
             else:
                 self.feedback_lbl.configure(text=msg, text_color=Theme.DANGER)
+                ToastNotification.show(self, msg, toast_type="danger")
+
+        ConfirmModal(
+            self,
+            title="Delete Cat Record",
+            message=f"Are you sure you want to delete Cat #{self.selected_cat_id} ({cat_name})?\nAll attached photos will also be permanently removed.",
+            confirm_text="Delete Cat",
+            is_destructive=True,
+            on_confirm=on_delete_confirmed
+        )
 
     def _handle_search(self):
         search_txt = self.search_entry.get().strip()

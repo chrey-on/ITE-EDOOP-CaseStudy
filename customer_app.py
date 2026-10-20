@@ -27,7 +27,7 @@ class CustomerApp(ctk.CTk):
         ctk.set_default_color_theme("blue")
         self.configure(fg_color=Theme.BG_ROOT)
 
-        # Initialize SQLite database
+        # Initialize database (MySQL with SQLite fallback)
         db = DatabaseConnection()
         db.initialize_database()
 

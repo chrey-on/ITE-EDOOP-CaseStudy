@@ -42,7 +42,22 @@ class LoginView(ctk.CTkFrame):
             font=Theme.font_caption(),
             text_color=Theme.TEXT_MUTED
         )
-        subtitle_label.grid(row=1, column=0, padx=36, pady=(0, 24))
+        subtitle_label.grid(row=1, column=0, padx=36, pady=(0, 6))
+
+        # Active Database Badge
+        db_type = self.auth_controller.db.get_db_type()
+        db_icon = "🟢" if "MySQL" in db_type else "🔵"
+        db_badge = ctk.CTkLabel(
+            self,
+            text=f"{db_icon} Database: {db_type}",
+            font=Theme.font_tiny(),
+            text_color=Theme.TEXT_SECONDARY,
+            fg_color=Theme.BG_INPUT,
+            corner_radius=Theme.RADIUS_PILL,
+            padx=10,
+            pady=2
+        )
+        db_badge.grid(row=2, column=0, padx=36, pady=(0, 18))
 
         login_header = ctk.CTkLabel(
             self,
@@ -50,7 +65,7 @@ class LoginView(ctk.CTkFrame):
             font=Theme.font_subtitle(),
             text_color=Theme.TEXT_PRIMARY
         )
-        login_header.grid(row=2, column=0, padx=36, pady=(0, 16))
+        login_header.grid(row=3, column=0, padx=36, pady=(0, 16))
 
         # Username Input
         self.username_entry = ctk.CTkEntry(
@@ -64,7 +79,7 @@ class LoginView(ctk.CTkFrame):
             placeholder_text_color=Theme.TEXT_MUTED,
             placeholder_text="Username"
         )
-        self.username_entry.grid(row=3, column=0, padx=36, pady=6)
+        self.username_entry.grid(row=4, column=0, padx=36, pady=6)
         self.username_entry.bind("<Return>", lambda e: self.password_entry.focus())
 
         # Password Input
@@ -80,7 +95,7 @@ class LoginView(ctk.CTkFrame):
             placeholder_text="Password",
             show="•"
         )
-        self.password_entry.grid(row=4, column=0, padx=36, pady=6)
+        self.password_entry.grid(row=5, column=0, padx=36, pady=6)
         self.password_entry.bind("<Return>", lambda e: self._handle_login())
 
         # Error / Feedback Message Label
@@ -90,51 +105,54 @@ class LoginView(ctk.CTkFrame):
             font=Theme.font_caption(),
             text_color=Theme.DANGER
         )
-        self.feedback_label.grid(row=5, column=0, padx=36, pady=(4, 4))
+        self.feedback_label.grid(row=6, column=0, padx=36, pady=(4, 4))
 
         # Login Button
         self.login_btn = ctk.CTkButton(
             self,
             text="Sign In",
             width=290,
-            height=38,
+            height=40,
             corner_radius=Theme.RADIUS_BTN,
-            font=Theme.font_body_bold(),
+            font=Theme.font_subtitle(),
             fg_color=Theme.PRIMARY,
             hover_color=Theme.PRIMARY_HOVER,
             text_color=Theme.PRIMARY_TEXT,
+            cursor="hand2",
             command=self._handle_login
         )
-        self.login_btn.grid(row=6, column=0, padx=36, pady=(8, 16))
+        self.login_btn.grid(row=7, column=0, padx=36, pady=(8, 16))
 
         # Quick Fill Helpers (Great for presentation / case study defense)
         quick_fill_frame = ctk.CTkFrame(self, fg_color="transparent")
-        quick_fill_frame.grid(row=7, column=0, padx=36, pady=(0, 28))
+        quick_fill_frame.grid(row=8, column=0, padx=36, pady=(0, 28))
 
         admin_fill_btn = ctk.CTkButton(
             quick_fill_frame,
-            text="Fill Admin",
+            text="⚡ Fill Admin",
             width=140,
-            height=30,
+            height=32,
             corner_radius=Theme.RADIUS_BTN,
             font=Theme.font_caption_bold(),
             fg_color=Theme.SECONDARY,
             hover_color=Theme.SECONDARY_HOVER,
             text_color=Theme.SECONDARY_TEXT,
+            cursor="hand2",
             command=lambda: self._quick_fill("admin", "admin123")
         )
         admin_fill_btn.pack(side="left", padx=5)
 
         staff_fill_btn = ctk.CTkButton(
             quick_fill_frame,
-            text="Fill Staff",
+            text="⚡ Fill Staff",
             width=140,
-            height=30,
+            height=32,
             corner_radius=Theme.RADIUS_BTN,
             font=Theme.font_caption_bold(),
             fg_color=Theme.SECONDARY,
             hover_color=Theme.SECONDARY_HOVER,
             text_color=Theme.SECONDARY_TEXT,
+            cursor="hand2",
             command=lambda: self._quick_fill("staff", "staff123")
         )
         staff_fill_btn.pack(side="left", padx=5)

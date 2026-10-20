@@ -6,6 +6,8 @@ Implements full CRUD operations, live search, and form population events for ado
 from tkinter import messagebox
 import customtkinter as ctk
 from views.theme import Theme
+from views.toast import ToastNotification
+from views.dialogs import ConfirmModal, AlertModal
 from controllers.adopter_controller import AdopterController
 from models.adopter import Adopter
 
@@ -321,11 +323,11 @@ class AdopterView(ctk.CTkFrame):
         tbl_hdr.grid_columnconfigure(3, weight=2, minsize=100)  # Housing
         tbl_hdr.grid_columnconfigure(4, weight=1, minsize=85)   # Status
 
-        ctk.CTkLabel(tbl_hdr, text="ID", font=Theme.font_caption_bold(), text_color=Theme.TEXT_MUTED, anchor="w").grid(row=0, column=0, sticky="w", padx=(12, 5), pady=7)
-        ctk.CTkLabel(tbl_hdr, text="Full Name", font=Theme.font_caption_bold(), text_color=Theme.TEXT_MUTED, anchor="w").grid(row=0, column=1, sticky="w", padx=5, pady=7)
-        ctk.CTkLabel(tbl_hdr, text="Contact No.", font=Theme.font_caption_bold(), text_color=Theme.TEXT_MUTED, anchor="w").grid(row=0, column=2, sticky="w", padx=5, pady=7)
-        ctk.CTkLabel(tbl_hdr, text="Housing", font=Theme.font_caption_bold(), text_color=Theme.TEXT_MUTED, anchor="w").grid(row=0, column=3, sticky="w", padx=5, pady=7)
-        ctk.CTkLabel(tbl_hdr, text="Status", font=Theme.font_caption_bold(), text_color=Theme.TEXT_MUTED, anchor="center").grid(row=0, column=4, sticky="ew", padx=5, pady=7)
+        ctk.CTkLabel(tbl_hdr, text="ID", font=Theme.font_caption_bold(), text_color=Theme.TEXT_SECONDARY, anchor="w").grid(row=0, column=0, sticky="w", padx=(12, 5), pady=7)
+        ctk.CTkLabel(tbl_hdr, text="Full Name", font=Theme.font_caption_bold(), text_color=Theme.TEXT_SECONDARY, anchor="w").grid(row=0, column=1, sticky="w", padx=5, pady=7)
+        ctk.CTkLabel(tbl_hdr, text="Contact No.", font=Theme.font_caption_bold(), text_color=Theme.TEXT_SECONDARY, anchor="w").grid(row=0, column=2, sticky="w", padx=5, pady=7)
+        ctk.CTkLabel(tbl_hdr, text="Housing", font=Theme.font_caption_bold(), text_color=Theme.TEXT_SECONDARY, anchor="w").grid(row=0, column=3, sticky="w", padx=5, pady=7)
+        ctk.CTkLabel(tbl_hdr, text="Status", font=Theme.font_caption_bold(), text_color=Theme.TEXT_SECONDARY, anchor="center").grid(row=0, column=4, sticky="ew", padx=5, pady=7)
 
         # Scrollable Adopters Rows Frame
         self.rows_frame = ctk.CTkScrollableFrame(list_container, fg_color="transparent")
@@ -349,8 +351,13 @@ class AdopterView(ctk.CTkFrame):
             self.count_badge.configure(text=f"{total_count} Adopter{'s' if total_count != 1 else ''}")
 
         if not adopters:
-            no_data_lbl = ctk.CTkLabel(self.rows_frame, text="No adopter records found.", text_color=Theme.TEXT_MUTED, font=Theme.font_body())
-            no_data_lbl.grid(row=0, column=0, pady=30)
+            empty_frame = Theme.create_empty_state(
+                self.rows_frame,
+                icon="👥",
+                title="No Adopters Found",
+                subtitle="Try a different name or search keyword."
+            )
+            empty_frame.grid(row=0, column=0, pady=30)
             return
 
         for idx, adopter in enumerate(adopters):
@@ -473,17 +480,19 @@ class AdopterView(ctk.CTkFrame):
             success, res = self.controller.create_adopter(new_adopter)
             if success:
                 self.feedback_lbl.configure(text=f"Adopter '{name}' registered successfully!", text_color=Theme.SUCCESS[0])
+                ToastNotification.show(self, f"Adopter profile '{name}' created!", toast_type="success", title="Adopter Registered")
                 self.clear_form()
                 if self.on_data_changed:
                     self.on_data_changed()
             else:
                 self.feedback_lbl.configure(text=res, text_color=Theme.DANGER[0])
+                ToastNotification.show(self, res, toast_type="danger")
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
     def _handle_update(self):
         if not self.selected_adopter_id:
-            messagebox.showwarning("No Selection", "Please select an adopter from the list to update.")
+            ToastNotification.show(self, "Please select an adopter from the list to update.", toast_type="warning")
             return
 
         try:
@@ -492,7 +501,7 @@ class AdopterView(ctk.CTkFrame):
             address = self.address_box.get("1.0", "end").strip()
 
             if not name or not contact or not address:
-                messagebox.showwarning("Validation Error", "Full Name, Contact Number, and Address are required.")
+                ToastNotification.show(self, "Full Name, Contact Number, and Address are required.", toast_type="warning")
                 return
 
             adopter_to_update = Adopter(
@@ -509,32 +518,43 @@ class AdopterView(ctk.CTkFrame):
             success, msg = self.controller.update_adopter(adopter_to_update)
             if success:
                 self.feedback_lbl.configure(text=msg, text_color=Theme.SUCCESS[0])
+                ToastNotification.show(self, f"Adopter #{self.selected_adopter_id} ({name}) updated!", toast_type="success", title="Adopter Updated")
                 self.refresh_adopter_list()
                 if self.on_data_changed:
                     self.on_data_changed()
             else:
                 self.feedback_lbl.configure(text=msg, text_color=Theme.DANGER[0])
+                ToastNotification.show(self, msg, toast_type="danger")
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
     def _handle_delete(self):
         if not self.selected_adopter_id:
-            messagebox.showwarning("No Selection", "Please select an adopter from the list to delete.")
+            ToastNotification.show(self, "Please select an adopter from the list to delete.", toast_type="warning")
             return
 
-        confirm = messagebox.askyesno(
-            "Confirm Deletion",
-            f"Are you sure you want to delete Adopter #{self.selected_adopter_id} ({self.name_entry.get()})?\nAssociated applications will also be removed."
-        )
-        if confirm:
+        name = self.name_entry.get().strip() or "this adopter"
+
+        def on_delete_confirmed():
             success, msg = self.controller.delete_adopter(self.selected_adopter_id)
             if success:
                 self.feedback_lbl.configure(text=msg, text_color=Theme.DANGER[0])
+                ToastNotification.show(self, f"Adopter #{self.selected_adopter_id} ({name}) deleted.", toast_type="danger", title="Adopter Deleted")
                 self.clear_form()
                 if self.on_data_changed:
                     self.on_data_changed()
             else:
                 self.feedback_lbl.configure(text=msg, text_color=Theme.DANGER[0])
+                ToastNotification.show(self, msg, toast_type="danger")
+
+        ConfirmModal(
+            self,
+            title="Delete Adopter Profile",
+            message=f"Are you sure you want to delete Adopter #{self.selected_adopter_id} ({name})?\nAssociated applications will also be permanently removed.",
+            confirm_text="Delete Profile",
+            is_destructive=True,
+            on_confirm=on_delete_confirmed
+        )
 
     def _handle_search(self):
         search_txt = self.search_entry.get().strip()
